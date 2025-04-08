@@ -1,4 +1,4 @@
-import { Injectable, Type } from '@angular/core';
+import { inject, Injectable, Type } from '@angular/core';
 import { MatDialog, MatDialogConfig, MatDialogRef } from '@angular/material/dialog';
 import { StrictlyTypedMatDialog } from './strictly-typed-mat-dialog';
 
@@ -6,7 +6,7 @@ import { StrictlyTypedMatDialog } from './strictly-typed-mat-dialog';
   providedIn: 'root'
 })
 export class StrictlyTypedMatDialogService {
-  constructor(private dialog: MatDialog) { }
+  dialog = inject(MatDialog);
 
   open<DialogData, DialogResult>(
     component: Type<StrictlyTypedMatDialog<DialogData, DialogResult>>,
