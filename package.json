@@ -6,7 +6,11 @@
     "start": "ng serve",
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
-    "test": "ng test"
+    "test": "ng test",
+    "prebuild:lib": "cp README.md projects/strictly-typed-mat-dialog/README.md",
+    "build:lib": "ng build strictly-typed-mat-dialog",
+    "postbuild:lib": "rm projects/strictly-typed-mat-dialog/README.md",
+    "build:lib:full": "cp README.md projects/strictly-typed-mat-dialog/README.md && ng build strictly-typed-mat-dialog && rm projects/strictly-typed-mat-dialog/README.md"
   },
   "private": true,
   "dependencies": {
