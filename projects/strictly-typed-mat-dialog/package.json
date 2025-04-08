@@ -9,5 +9,13 @@
   "dependencies": {
     "tslib": "^2.3.0"
   },
-  "sideEffects": false
+  "sideEffects": false,
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/JustSolve-self-serve/strictly-typed-mat-dialog.git"
+  },
+  "bugs": {
+    "url": "https://github.com/JustSolve-self-serve/strictly-typed-mat-dialog/issues"
+  },
+  "homepage": "https://github.com/JustSolve-self-serve/strictly-typed-mat-dialog/tree/main/projects/strictly-typed-mat-dialog"
 }

@@ -1,59 +1,89 @@
-# TypedDialogWorkspace
+# StrictlyTypedMatDialog
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 19.2.4.
+A type-safe wrapper for Angular Material's MatDialog service that ensures complete type safety for dialog components, their data, and return values.
 
-## Development server
+## Features
 
-To start a local development server, run:
+- Full type safety for dialog component, input data, and return values
+- Compatible with existing Angular Material Dialog API
+- Zero runtime overhead
+- Improved developer experience with better IntelliSense support
 
-```bash
-ng serve
-```
-
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
-
-## Code scaffolding
-
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
+## Installation
 
 ```bash
-ng generate component component-name
+npm install strictly-typed-mat-dialog
 ```
 
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
+## Usage
 
-```bash
-ng generate --help
+### 1. Import the service
+
+```typescript
+import { StrictlyTypedMatDialogService } from 'strictly-typed-mat-dialog';
 ```
 
-## Building
+### 2. Define your dialog component
 
-To build the project run:
+```typescript
+import { Component } from '@angular/core';
+import { StrictlyTypedMatDialog } from 'strictly-typed-mat-dialog';
 
-```bash
-ng build
+@Component({
+    selector: 'app-example-dialog',
+    template: `<h1>{{data.message}}</h1>
+             <button (click)="confirm()">Confirm</button>`
+})
+export class ExampleDialogComponent extends StrictlyTypedMatDialog<{ message: string }, string> {
+    confirm() {
+        this.dialogRef.close('Confirmed');
+    }
+}
 ```
 
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
+### 3. Use the dialog service
 
-## Running unit tests
+```typescript
+constructor(private dialog: StrictlyTypedMatDialogService) {}
 
-To execute unit tests with the [Karma](https://karma-runner.github.io) test runner, use the following command:
-
-```bash
-ng test
+openDialog() {
+    const config = { data: { message: 'Hello World' } };
+    const dialogRef = this.dialog.open(ExampleDialogComponent, config);
+    
+    dialogRef.afterClosed().subscribe((result: string) => {
+        // result is properly typed as string
+        console.log(result); // Will be 'Confirmed' when confirmed
+    });
+}
 ```
 
-## Running end-to-end tests
+## Benefits
 
-For end-to-end (e2e) testing, run:
+1. **Compile-time Type Safety**
+   - Catch errors before runtime
+   - No more typos in data property names
+   - Ensure all required dialog data is provided
 
-```bash
-ng e2e
-```
+2. **Better Developer Experience**
+   - Full IntelliSense support
+   - Autocomplete for dialog data properties
+   - Clear contract between dialog and parent component
 
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
+3. **Maintainability**
+   - Refactoring is safer
+   - Changes to dialog interfaces are immediately flagged
+   - Better code documentation through types
 
-## Additional Resources
+## API
 
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+### StrictlyTypedMatDialogService
+
+#### open<T extends StrictlyTypedMatDialog<D, R>, D, R>(component: ComponentType<T>, config?: MatDialogConfig<D>): MatDialogRef<T, R>
+
+- `T`: The dialog component type (must extend StrictlyTypedMatDialog)
+- `D`: The type of the dialog data
+- `R`: The type of the result when the dialog is closed
+
+## License
+
+MIT
