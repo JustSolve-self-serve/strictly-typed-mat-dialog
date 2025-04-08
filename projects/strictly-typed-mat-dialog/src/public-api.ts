@@ -3,4 +3,4 @@
  */
 
 export * from './lib/strictly-typed-mat-dialog.service';
-export * from './lib/strictly-typed-mat-dialog.component';
+export * from './lib/strictly-typed-mat-dialog';
