@@ -1,63 +1,132 @@
 # StrictlyTypedMatDialog
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 19.2.0.
+A type-safe wrapper for Angular Material's MatDialog service that ensures complete type safety for dialog components, their data, and return values.
 
-## Code scaffolding
+## Features
 
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
+- Full type safety for dialog component, input data, and return values
+- Compatible with existing Angular Material Dialog API
+- Zero runtime overhead
+- Improved developer experience with better IntelliSense support
 
-```bash
-ng generate component component-name
-```
-
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
-
-```bash
-ng generate --help
-```
-
-## Building
-
-To build the library, run:
+## Installation
 
 ```bash
-ng build strictly-typed-mat-dialog
+npm install strictly-typed-mat-dialog
 ```
 
-This command will compile your project, and the build artifacts will be placed in the `dist/` directory.
+## Usage
 
-### Publishing the Library
+### 1. Import the module
 
-Once the project is built, you can publish your library by following these steps:
+```typescript
+import { StrictlyTypedMatDialog } from 'strictly-typed-mat-dialog';
 
-1. Navigate to the `dist` directory:
-   ```bash
-   cd dist/strictly-typed-mat-dialog
-   ```
-
-2. Run the `npm publish` command to publish your library to the npm registry:
-   ```bash
-   npm publish
-   ```
-
-## Running unit tests
-
-To execute unit tests with the [Karma](https://karma-runner.github.io) test runner, use the following command:
-
-```bash
-ng test
+@NgModule({
+  imports: [
+    StrictlyTypedMatDialog,
+    // ... other imports
+  ]
+})
+export class AppModule { }
 ```
 
-## Running end-to-end tests
+### 2. Define your dialog component with proper typing
 
-For end-to-end (e2e) testing, run:
+```typescript
+// example-dialog.component.ts
+interface DialogData {
+  title: string;
+  message: string;
+}
 
-```bash
-ng e2e
+interface DialogResult {
+  accepted: boolean;
+}
+
+@Component({
+  selector: 'app-example-dialog',
+  template: `
+    <h2>{{data.title}}</h2>
+    <p>{{data.message}}</p>
+    <button (click)="dialogRef.close({accepted: true})">Accept</button>
+    <button (click)="dialogRef.close({accepted: false})">Decline</button>
+  `
+})
+export class ExampleDialogComponent {
+  constructor(
+    public dialogRef: MatDialogRef<ExampleDialogComponent, DialogResult>,
+    @Inject(MAT_DIALOG_DATA) public data: DialogData
+  ) {}
+}
 ```
 
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
+### 3. Use the strictly typed service
 
-## Additional Resources
+```typescript
+// Before (standard MatDialog):
+constructor(private dialog: MatDialog) {}
 
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+openDialog() {
+  const dialogRef = this.dialog.open(ExampleDialogComponent, {
+    data: { title: 'Hello' } // No type checking!
+  });
+  
+  dialogRef.afterClosed().subscribe(result => {
+    // result is typed as 'any'
+  });
+}
+
+// After (StrictlyTypedMatDialog):
+constructor(private dialog: StrictlyTypedMatDialogService) {}
+
+openDialog() {
+  const dialogRef = this.dialog.open<ExampleDialogComponent, DialogData, DialogResult>(
+    ExampleDialogComponent,
+    {
+      data: { 
+        title: 'Hello',    // Type checked!
+        message: 'World'   // Type checked!
+      }
+    }
+  );
+  
+  dialogRef.afterClosed().subscribe(result => {
+    // result is properly typed as DialogResult
+    if (result?.accepted) {
+      // TypeScript knows this is boolean
+    }
+  });
+}
+```
+
+## Benefits
+
+1. **Compile-time Type Safety**
+   - Catch errors before runtime
+   - No more typos in data property names
+   - Ensure all required dialog data is provided
+
+2. **Better Developer Experience**
+   - Full IntelliSense support
+   - Autocomplete for dialog data properties
+   - Clear contract between dialog and parent component
+
+3. **Maintainability**
+   - Refactoring is safer
+   - Changes to dialog interfaces are immediately flagged
+   - Better code documentation through types
+
+## API
+
+### StrictlyTypedMatDialogService
+
+#### open<C, D, R>(component: ComponentType<C>, config?: MatDialogConfig<D>): MatDialogRef<C, R>
+
+- `C`: The component type
+- `D`: The type of the dialog data
+- `R`: The type of the result when the dialog is closed
+
+## License
+
+MIT
