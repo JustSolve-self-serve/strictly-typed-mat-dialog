@@ -1,6 +1,52 @@
 # StrictlyTypedMatDialog
 
+## The Problem
+
+In Angular Material’s current implementation of MatDialog, you must manually specify type parameters even though the dialog component already carries its own type definitions. For example:
+
+```typescript
+// Before:
+const dialogRef = this.dialog.open<ADialogComponent, any, ReturnTypeHere>(ADialogComponent, { data: { ... } });
+// You must specify the return type manually, resulting in potential mistakes:
+dialogRef.afterClosed().subscribe((result: any) => { console.log(result); });
+```
+
+This creates two main issues:
+- Redundancy & Decoupling: The component’s type for input data and return value is declared in two places, risking mismatches.
+- Loss of Inference: The type system cannot automatically infer the dialog’s data and result types, leading to weakly typed (or even "any") outcomes in afterClosed().
+
+The StrictlyTypedMatDialog library solves these problems by deriving type information directly from the dialog component, ensuring consistency and reducing redundancy.
+
 A type-safe wrapper for Angular Material's MatDialog service that ensures complete type safety for dialog components, their data, and return values.
+
+## Before vs. After
+
+### Before
+Without strict typing, you might write:
+
+```typescript
+// Before:
+const dialogRef = this.dialog.open(ExampleDialogComponent, { data: { message: 'Hello World' } });
+// Result type is not enforced and defaults to any:
+dialogRef.afterClosed().subscribe((result: any) => { console.log(result); });
+
+//but even a line like this still compiles, which is crazy:
+dialogRef.afterClosed().subscribe((result: IOtherUnrelatedType) => { console.log(result); }); // this should be a compile error, but it actually isn't.
+```
+
+### After
+With StrictlyTypedMatDialog, the types are inferred from the component:
+
+```typescript
+// After:
+const dialogRef = this.dialog.open(ExampleDialogComponent, { data: { message: 'Hello World' } });
+// Result type is automatically inferred (e.g., string) from the component’s declaration:
+dialogRef.afterClosed().subscribe((result: string) => { console.log(result); });
+
+// this is now correctly recognized as a compile error: the type is mismatched from the actual definition in the component.
+dialogRef.afterClosed().subscribe((result: IOtherUnrelatedType) => { console.log(result); }); 
+
+```
 
 ## Features
 
